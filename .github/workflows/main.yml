@@ -1,4 +1,4 @@
-name: Fast Sync VOID to Bitbucket
+name: Fast Sync All Configs to Bitbucket
 
 on:
   schedule:
@@ -9,14 +9,24 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Fetch from VOID and Push to Bitbucket
+      - name: Fetch and Push All
         run: |
-          # 1. Скачиваем свежий файл у VOID
+          # Скачиваем V.O.I.D
           curl -sSL "https://raw.githubusercontent.com/VOID-Anonymity/V.O.I.D-VPN_Bypass/refs/heads/main/url_work.txt" -o url_work.txt
 
-          # 2. Мгновенно отправляем файл в ваш Bitbucket через токен
+          # Скачиваем все файлы Kizyak
+          curl -sSL "https://raw.githubusercontent.com/Maskkost93/kizyak-vpn-4.0/refs/heads/main/kizyakbeta8.json" -o kizyakbeta8.json
+          curl -sSL "https://raw.githubusercontent.com/Maskkost93/kizyak-vpn-4.0/refs/heads/main/kizyakbeta8.txt" -o kizyakbeta8.txt
+          curl -sSL "https://raw.githubusercontent.com/Maskkost93/kizyak-vpn-4.0/refs/heads/main/kizyakbeta7.txt" -o kizyakbeta7.txt
+          curl -sSL "https://raw.githubusercontent.com/Maskkost93/kizyak-vpn-4.0/refs/heads/main/kizyakbeta6.txt" -o kizyakbeta6.txt
+
+          # Отправляем всё разом в Bitbucket
           curl -X POST \
             -H "Authorization: Bearer ${{ secrets.BB_TOKEN }}" \
             "https://api.bitbucket.org/2.0/repositories/anchetka-configs/void-vpn/src" \
             -F url_work.txt=@url_work.txt \
-            -F message="Auto-update VOID keys"
+            -F kizyakbeta8.json=@kizyakbeta8.json \
+            -F kizyakbeta8.txt=@kizyakbeta8.txt \
+            -F kizyakbeta7.txt=@kizyakbeta7.txt \
+            -F kizyakbeta6.txt=@kizyakbeta6.txt \
+            -F message="Auto-update VOID and Kizyak all configs"
