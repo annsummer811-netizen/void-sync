@@ -1,0 +1,22 @@
+name: Fast Sync VOID to Bitbucket
+
+on:
+  schedule:
+    - cron: '*/20 * * * *' # Запуск каждые 20 минут
+  workflow_dispatch:   # Кнопка для ручного запуска
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch from VOID and Push to Bitbucket
+        run: |
+          # 1. Скачиваем свежий файл у VOID
+          curl -sSL "https://raw.githubusercontent.com/VOID-Anonymity/V.O.I.D-VPN_Bypass/refs/heads/main/url_work.txt" -o url_work.txt
+
+          # 2. Мгновенно отправляем файл в ваш Bitbucket через токен
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.BB_TOKEN }}" \
+            "https://api.bitbucket.org/2.0/repositories/anchetka-configs/void-vpn/src" \
+            -F url_work.txt=@url_work.txt \
+            -F message="Auto-update VOID keys"
